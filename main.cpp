@@ -68,12 +68,13 @@ public:
     void publish();
     void unpublish();
     string Info_type() { return type; } // niaz bod baraye print all
-    Question(string, string, User, DateTime) ;
+     string q_print() { return question; } // niaz bod baraye print all
+    Question(string, string, User, DateTime);
     virtual void print() = 0;
     virtual void printAll() = 0;
 };
 
-Question::Question(string TYPE, string QUESTION, User USER, DateTime CREATED_AT) : type(TYPE),question(QUESTION),user(USER),createdAt(CREATED_AT)
+Question::Question(string TYPE, string QUESTION, User USER, DateTime CREATED_AT) : type(TYPE), question(QUESTION), user(USER), createdAt(CREATED_AT)
 {
     isPublished = false;
 }
@@ -90,7 +91,7 @@ private:
 
 public:
     void print();
-    void printALL();
+    void printAll();
     void addAnswer(string);
     Descriptive(User, DateTime, string);
 };
@@ -118,18 +119,19 @@ void Descriptive::print()
     }
 }
 
-// void Descriptive::printALL(){
-// while (QuestionS[i]!=NULL)
-// {
-//     if (QuestionS[i]->Info_type=="Descriptive")
-//     {
-// cout << "Q_number " << i << " : "  <<
-//     }
+void Descriptive::printAll()
+{
+    int i;
+    while (QuestionS[i] != NULL)
+    {
+        if (QuestionS[i]->Info_type() == "Descriptive")
+        {
+            cout << "Q_number " << i << " : " << QuestionS[i]->q_print() << endl;
+        }
 
-//    i++;
-// }
-
-// }
+        i++;
+    }
+}
 
 void Descriptive::addAnswer(string answer)
 {
@@ -147,6 +149,7 @@ private:
 
 public:
     void print();
+    void printAll();
     FourChoice(char, string, string, string, string, User, DateTime, string);
 };
 FourChoice::FourChoice(char answer, string A, string B, string C, string D, User usr, DateTime crAt, string Ques) : Question("FourChoice", Ques, usr, crAt)
@@ -156,6 +159,21 @@ FourChoice::FourChoice(char answer, string A, string B, string C, string D, User
     this->C = C;
     this->D = D;
     this->answer = answer;
+}
+
+
+void FourChoice::printAll()
+{
+    int i;
+    while (QuestionS[i] != NULL)
+    {
+        if (QuestionS[i]->Info_type() == "FourChoice")
+        {
+            cout << "Q_number " << i << " : " << QuestionS[i]->q_print() << endl;
+        }
+
+        i++;
+    }
 }
 
 void FourChoice::print()
