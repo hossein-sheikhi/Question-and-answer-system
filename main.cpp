@@ -1,4 +1,5 @@
 #include <iostream>
+
 using namespace std;
 
 struct DateTime
@@ -30,6 +31,8 @@ public:
     User(string, string, string);
 };
 
+User::User(string NAME, string USERNAME, string PASSWORD) : name(NAME), username(USERNAME), password(PASSWORD) {}
+
 bool User::checkAuth(string usr, string pass)
 {
     if (username == usr && password == pass)
@@ -42,8 +45,6 @@ bool User::checkAuth(string usr, string pass)
     }
 }
 
-User::User(string NAME, string USERNAME, string PASSWORD) : name(NAME), username(USERNAME), password(PASSWORD) {}
-
 void User::printUser() { cout << username << endl; } // to matn soal nis ama niyaze
 
 void User::print()
@@ -52,7 +53,6 @@ void User::print()
          << "username: " << username << endl
          << "password: " << password << endl;
 }
-
 
 class Question
 {
@@ -67,39 +67,21 @@ protected:
 public:
     void publish();
     void unpublish();
-    string Info_type(){return type;} // niaz bod baraye print all
-
-    Question(string type, string question, User user, DateTime createdAt)
-{
-    
-    
-    this->type = type;
-    this->question = question;
-    this->createdAt = createdAt;
-    this->user = user;
-}
-
+    string Info_type() { return type; } // niaz bod baraye print all
+    Question(string, string, User, DateTime) ;
     virtual void print() = 0;
     virtual void printAll() = 0;
 };
 
+Question::Question(string TYPE, string QUESTION, User USER, DateTime CREATED_AT) : type(TYPE),question(QUESTION),user(USER),createdAt(CREATED_AT)
+{
+    isPublished = false;
+}
 
-
-
-Question *QuestionS[100]={NULL};
-
+Question *QuestionS[100] = {NULL};
 
 void Question::unpublish() { isPublished = false; }
 void Question::publish() { isPublished = true; }
-
-
-
-
-
-
-
-
-
 
 class Descriptive : public Question
 {
@@ -108,7 +90,7 @@ private:
 
 public:
     void print();
-     void printALL();
+    void printALL();
     void addAnswer(string);
     Descriptive(User, DateTime, string);
 };
@@ -136,18 +118,23 @@ void Descriptive::print()
     }
 }
 
+// void Descriptive::printALL(){
+// while (QuestionS[i]!=NULL)
+// {
+//     if (QuestionS[i]->Info_type=="Descriptive")
+//     {
+// cout << "Q_number " << i << " : "  <<
+//     }
 
+//    i++;
+// }
 
+// }
 
 void Descriptive::addAnswer(string answer)
 {
     this->answer = answer;
 }
-
-
-
-
-
 
 class FourChoice : public Question
 {
