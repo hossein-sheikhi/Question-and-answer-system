@@ -134,19 +134,7 @@ void Descriptive::print()
     }
 }
 
-void Descriptive::printALL(){
-while (QuestionS[i]!=NULL)
-{
-    if (QuestionS[i]->Info_type=="Descriptive")
-    {
-cout << "Q_number " << i << " : "  << 
-    }
-    
-   i++;
-}
 
-   
-}
 
 
 void Descriptive::addAnswer(string answer)
