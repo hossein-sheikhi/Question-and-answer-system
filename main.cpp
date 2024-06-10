@@ -68,7 +68,17 @@ public:
     void publish();
     void unpublish();
     string Info_type(){return type;} // niaz bod baraye print all
-    Question(string, string, User, DateTime);
+
+    Question(string type, string question, User user, DateTime createdAt)
+{
+    
+    
+    this->type = type;
+    this->question = question;
+    this->createdAt = createdAt;
+    this->user = user;
+}
+
     virtual void print() = 0;
     virtual void printAll() = 0;
 };
@@ -78,14 +88,6 @@ public:
 
 Question *QuestionS[100]={NULL};
 
-Question::Question(string type, string question, User user, DateTime createdAt)
-{
-    isPublished=false;
-    this->type = type;
-    this->question = question;
-    this->createdAt = createdAt;
-    this->user = user;
-}
 
 void Question::unpublish() { isPublished = false; }
 void Question::publish() { isPublished = true; }
