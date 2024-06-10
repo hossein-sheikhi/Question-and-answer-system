@@ -14,7 +14,41 @@ private:
 
 public:
     Tag(string str) : title(str) {}
+    void print();
+    string showTag();       // baraye print all niyaze
+    static void printAll(); // static behtare
+    static Tag *create(string);
 };
+
+void Tag::print() { cout << title << endl; }
+string Tag::showTag() { return title; }
+
+Tag *MyTags[100] = {nullptr};
+
+Tag *Tag::create(string TAG)
+{
+    int x = 0;
+    Tag *TEMP = new Tag(TAG);
+    while (MyTags[x] != nullptr)
+    {
+        x++;
+    }
+    MyTags[x] = TEMP;
+    return TEMP;
+}
+
+void printAll()
+{
+cout << "your tags are :"<<endl;
+    for (size_t i = 0; i < 100; i++)
+    {
+        if (MyTags[i] != nullptr)
+        {
+            cout << "("<<i<<"). ";
+           MyTags[i]->print();
+        }
+    }
+}
 
 class User
 {
@@ -45,8 +79,7 @@ bool User::checkAuth(string usr, string pass)
     }
 }
 
-void User::printUser() { cout << username << endl; } // to matn soal nis ama niyaze
-
+void User::printUser() { cout << username << endl; }
 void User::print()
 {
     cout << "name: " << name << endl
@@ -67,8 +100,8 @@ protected:
 public:
     void publish();
     void unpublish();
-    string Info_type() { return type; } // niaz bod baraye print all
-     string q_print() { return question; } // niaz bod baraye print all
+    string Info_type() { return type; }   // niaz bod baraye print all
+    string q_print() { return question; } // niaz bod baraye print all
     Question(string, string, User, DateTime);
     virtual void print() = 0;
     virtual void printAll() = 0;
@@ -160,7 +193,6 @@ FourChoice::FourChoice(char answer, string A, string B, string C, string D, User
     this->D = D;
     this->answer = answer;
 }
-
 
 void FourChoice::printAll()
 {
