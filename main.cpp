@@ -231,6 +231,21 @@ void FourChoice::print()
         cout << "This question isn't in publishing mode." << endl;
     }
 }
+class Permission{
+    private:
+    string title;
+    public :
+    Permission(string PERMISSION) : title(PERMISSION) {}
+    static Permission *create(string TITLE);
+    void print();
+    Permission *PER[100]={
+        new Permission("add-descriptive-question"),
+        new Permission("add-four-choice-question"),
+        new Permission("edit-descriptive-question"),
+        new Permission("edit-four-choice-question"),
+        new Permission("add-user"),NULL
+    };
+};
 
 int main()
 {
