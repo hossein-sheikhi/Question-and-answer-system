@@ -249,6 +249,10 @@ class Permission{
         new Permission("add-user"),NULL
     };
 };
+void Permission::print()
+{
+    cout <<"title :"<< title << endl;
+}
 
 int main()
 {
