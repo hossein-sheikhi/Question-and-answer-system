@@ -1,91 +1,10 @@
 #include <iostream>
-
 using namespace std;
 
 struct DateTime
 {
     int year, month, day, hour, minute, second;
 };
-
-class Tag
-{
-private:
-    string title;
-
-public:
-    Tag(string str) : title(str) {}
-    void print();
-    string showTag();       // baraye print all niyaze
-    static void printAll(); // static behtare
-    static Tag *create(string);
-};
-
-void Tag::print() { cout << title << endl; }
-string Tag::showTag() { return title; }
-
-Tag *MyTags[100] = {nullptr};
-
-Tag *Tag::create(string TAG)
-{
-    int x = 0;
-    Tag *TEMP = new Tag(TAG);
-    while (MyTags[x] != nullptr)
-    {
-        x++;
-    }
-    MyTags[x] = TEMP;
-    return TEMP;
-}
-
-void printAll()
-{
-cout << "your tags are :"<<endl;
-    for (size_t i = 0; i < 100; i++)
-    {
-        if (MyTags[i] != nullptr)
-        {
-            cout << "("<<i<<"). ";
-           MyTags[i]->print();
-        }
-    }
-}
-
-class User
-{
-private:
-    string name;
-    string username;
-    string password;
-    // Permission *permissions[100] = {NULL};
-
-public:
-    void print();
-    void printUser(); // to soal nabod vali lazem bod
-    bool checkAuth(string, string);
-    User(string, string, string);
-};
-
-User::User(string NAME, string USERNAME, string PASSWORD) : name(NAME), username(USERNAME), password(PASSWORD) {}
-
-bool User::checkAuth(string usr, string pass)
-{
-    if (username == usr && password == pass)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-void User::printUser() { cout << username << endl; }
-void User::print()
-{
-    cout << "name: " << name << endl
-         << "username: " << username << endl
-         << "password: " << password << endl;
-}
 
 class Question
 {
@@ -231,6 +150,90 @@ void FourChoice::print()
         cout << "This question isn't in publishing mode." << endl;
     }
 }
+
+class User
+{
+private:
+    string name;
+    string username;
+    string password;
+    // Permission *permissions[100] = {NULL};
+
+public:
+    void print();
+    void printUser(); // to soal nabod vali lazem bod
+    bool checkAuth(string, string);
+    User(string, string, string);
+};
+
+User::User(string NAME, string USERNAME, string PASSWORD) : name(NAME), username(USERNAME), password(PASSWORD) {}
+
+bool User::checkAuth(string usr, string pass)
+{
+    if (username == usr && password == pass)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void User::printUser() { cout << username << endl; }
+void User::print()
+{
+    cout << "name: " << name << endl
+         << "username: " << username << endl
+         << "password: " << password << endl;
+}
+
+
+class Tag
+{
+private:
+    string title;
+
+public:
+    Tag(string str) : title(str) {}
+    void print();
+    string showTag();       // baraye print all niyaze
+    static void printAll(); // static behtare
+    static Tag *create(string);
+};
+
+void Tag::print() { cout << title << endl; }
+string Tag::showTag() { return title; }
+
+Tag *MyTags[100] = {nullptr};
+
+Tag *Tag::create(string TAG)
+{
+    int x = 0;
+    Tag *TEMP = new Tag(TAG);
+    while (MyTags[x] != nullptr)
+    {
+        x++;
+    }
+    MyTags[x] = TEMP;
+    return TEMP;
+}
+
+void printAll()
+{
+cout << "your tags are :"<<endl;
+    for (size_t i = 0; i < 100; i++)
+    {
+        if (MyTags[i] != nullptr)
+        {
+            cout << "("<<i<<"). ";
+           MyTags[i]->print();
+        }
+    }
+}
+
+
+
 class Permission{
     private:
     string title;
