@@ -22,8 +22,7 @@ public:
 };
 /// tabeh print braye pree
 
-Permission *perar[100] = {new Permission("add-descriptive-question"), new Permission("add-four-choice-question"), new Permission("edit-descriptive-question"), new Permission("edit-four-choice-question"), new Permission("add-user"), NULL};
-
+Permission *perar[100] = {NULL};
 
 Permission *Permission::create(string _title)
 {
@@ -76,7 +75,7 @@ void User::addPermission(Permission *permission)
     }
     permissions[i] = permission;
 }
-User *userarray[100] = {new User("admin", "admin", "123456")};
+User *userarray[100] = {NULL};
 
 /// agar dastresi add user dasht
 // baresi shavad
@@ -105,7 +104,7 @@ void User::print()
 class Auth
 {
 private:
-    static User *auth;
+    inline static User *auth = NULL;
 
 public:
     static User *login(string username, string password);
@@ -181,15 +180,20 @@ protected:
 public:
     void publish();
     void unpublish();
-    void addTag(Tag *); ////  BAYAD EZAFEH SHAVAD
+    void addTag(Tag *); 
     // MITAVANAD NABASHAD
     string Info_type() { return type; }   // niaz bod baraye print all
     string q_print() { return question; } // niaz bod baraye print all
     ////////////////////////
-    Question(string, string, User, DateTime);
+    Question(string, DateTime, string, User);
     virtual void print() = 0;
     virtual void printAll() = 0;
 };
+
+Question::Question(string _question, DateTime _createdAt, string _type, User _user) : question(_question), createdAt(_createdAt), type(_type), user(_user)
+{
+    isPublished = false;
+}
 
 void Question::addTag(Tag *_tag)
 {
@@ -200,11 +204,6 @@ void Question::addTag(Tag *_tag)
             break;
     }
     MyTags[i]->showTag() = _tag->showTag();
-};
-
-Question::Question(string _type, string _question, User _user, DateTime _createdAt) : type(_type), question(_question), user(_user), createdAt(_createdAt)
-{
-    isPublished = false;
 }
 
 Question *QuestionS[100] = {NULL};
@@ -226,7 +225,7 @@ public:
     /// TABEH EDIT
 };
 
-Descriptive::Descriptive(User usr, DateTime crAt, string Ques) : Question("Descriptive", Ques, usr, crAt) {}
+Descriptive::Descriptive(User usr, DateTime crAt, string Ques) : Question(Ques, crAt, "Descriptive", usr) {}
 
 Descriptive *create(string, DateTime, User);
 
@@ -256,18 +255,18 @@ void Descriptive::print()
 void Descriptive::printAll()
 {
 
-    for (int i; QuestionS[i] != NULL; i++)
+    for (int j = 0; QuestionS[j] != NULL; j++)
     {
-        if (QuestionS[i]->Info_type() == "Descriptive")
+        if (QuestionS[j]->Info_type() == "Descriptive")
         {
-            cout << "❇️" << i << " : " << QuestionS[i]->q_print() << "❓" << endl;
+            cout << "❇️" << j << " : " << QuestionS[j]->q_print() << "❓" << endl;
         }
     }
 }
 
-void Descriptive::addAnswer(string answer)
+void Descriptive::addAnswer(string ans)
 {
-    this->answer = answer;
+    answer = ans;
 }
 
 class FourChoice : public Question
@@ -286,19 +285,19 @@ public:
     void printAll();
     FourChoice(char, string, string, string, string, User, DateTime, string);
 };
-FourChoice::FourChoice(char answer, string A, string B, string C, string D, User usr, DateTime crAt, string Ques) : Question("FourChoice", Ques, usr, crAt)
+FourChoice::FourChoice(char ans, string a, string b, string c, string d, User usr, DateTime crAt, string Ques) : Question(Ques, crAt, "FourChoice", usr)
 {
-    this->A = A;
-    this->B = B;
-    this->C = C;
-    this->D = D;
-    this->answer = answer;
+    A = a;
+    B = b;
+    C = c;
+    D = d;
+    answer = ans;
 }
 
 void FourChoice::printAll()
 {
 
-    for (int i; QuestionS[i] != NULL; i++)
+    for (int i = 0; QuestionS[i] != NULL; i++)
     {
         if (QuestionS[i]->Info_type() == "FourChoice")
         {
@@ -340,6 +339,7 @@ void NoLogin()
 
 void Login(string u_ser)
 {
+    system("clear");
     cout << "--------------------" << endl;
     cout << "Hello " << u_ser << " 🤚" << endl;
     cout << "--------------------" << endl;
@@ -348,8 +348,16 @@ void Login(string u_ser)
     cout << "⚪️(U) User Menu" << endl;
 }
 
+void TAG_MENU()
+{
+    system("clear");
+    cout << "⚪️(L) List of Tags with ID  " << endl
+         << "⚪️(V) Create new Tag " << endl;
+}
+
 void Qu_Menu()
 {
+    system("clear");
     cout << "⭕️(L) list of Descriptive Questions with ID" << endl;
     cout << "⭕️(C) create Descriptive Question" << endl;
     cout << "⭕️(E) edit Descriptive Question" << endl;
@@ -361,9 +369,31 @@ void Qu_Menu()
 }
 void User_Menu()
 {
+    system("clear");
     cout << "⚪️(L) List of Users with ID" << endl;
     cout << "⚪️(C) Create new User" << endl;
     cout << "⚪️(A) Add Permission to a User" << endl;
+}
+
+void CinNUP()
+{
+    string Name, UserName, PASSword;
+    cin.ignore();
+    cout << "write yuor name :";
+    getline(cin, Name);
+    cout << "write yuor user name :";
+    getline(cin, UserName);
+    cout << "write yuor password :";
+    getline(cin, PASSword);
+    if (Auth::login(UserName, PASSword))
+    {
+        Login(UserName);
+    }
+    else
+    {
+        system("clear");
+        cout << " User Not found ❌" << endl;
+    }
 }
 
 void p_FourChoice()
@@ -372,42 +402,121 @@ void p_FourChoice()
     DateTime TestDate = {2024, 6, 14, 18, 25, 00};
 
     FourChoice testQ('0', "null", "null", "null", "null", admin, TestDate, "null");
+    testQ.printAll();
 }
-    void p_Descriptive()
+
+void p_Descriptive()
+{
+    User admin("null", "null", "null");
+    DateTime TestDate = {2024, 6, 14, 18, 25, 00};
+    Descriptive testQ(admin, TestDate, "null");
+    testQ.printAll();
+}
+
+void p_Quetions()
+{
+    p_Descriptive();
+    p_FourChoice();
+}
+
+
+void Qmenu()
+{
+    char x;
+    cin>>x;
+    switch (x)
     {
+    case 'L':
+
+        break;
+    case 'C':
+
+        break;
+    case 'E':
+
+        break;
+    case 'P':
+        // p_Descriptive();
+        break;
+    case 'l':
+
+        break;
+    case 'c':
+
+        break;
+    case 'e':
+
+        break;
+    case 'p':
+        // p_FourChoice();
+        break;
+    default:
+        break;
     }
+}
 
-    void p_Quetions()
+void Tmenu()
+{}
+    
+
+void Umenu(){
+  
+}
+
+
+
+    void CinQTU()
     {
-        p_Descriptive();
-        p_FourChoice();
-    }
-
-    int main()
-    {
-
-
-
-
-
-
         char x;
-        NoLogin();
         cin >> x;
         switch (x)
         {
-        case 'l':
-        case 'L':
-            /* code */
+        case 'Q':
+        case 'q':
+            Qu_Menu();
+            Qmenu();
             break;
-        case 'V':
-        case 'v':
-
+        case 'T':
+        case 't':
+            TAG_MENU();
+            Tmenu();
+            break;
+        case 'U':
+        case 'u':
+            User_Menu();
+            Umenu();
         default:
-            system("clear");
-            cout << "❌ Not Found " << x << endl;
             break;
         }
-
-        return 0;
     }
+
+int main()
+{
+    Permission::create("add-descriptive-question");
+    Permission::create("add-four-choice-question");
+    Permission::create("edit-descriptive-question");
+    Permission::create("edit-four-choice-question");
+    Permission::create("add-user");
+    User::create("1", "1", "1");
+
+    char x;
+    NoLogin();
+    cin >> x;
+    switch (x)
+    {
+    case 'l':
+    case 'L':
+        CinNUP();
+        CinQTU();
+        break;
+    case 'V':
+    case 'v':
+
+    default:
+        system("clear");
+        cout << "❌ Not Found " << x << endl;
+        break;
+    }
+
+    return 0;
+}
