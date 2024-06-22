@@ -1,5 +1,10 @@
 #include <iostream>
 
+/*
+barkhi  az bakhsh ha be dorosti dar windows kar nemikonad ama linux okaye.
+clear("syetem")
+emojis
+*/
 using namespace std;
 
 struct DateTime
@@ -20,15 +25,14 @@ public:
         return title;
     }
 };
-/// tabeh print braye pree
 
-Permission *perar[100] = {NULL};
+Permission *perar[100] = {nullptr};
 
 Permission *Permission::create(string _title)
 {
     Permission *temp = new Permission(_title);
     int i = 0;
-    for (; perar[i] != NULL; i++)
+    for (; perar[i] != nullptr; i++)
     {
         ;
     }
@@ -40,15 +44,16 @@ class User
 {
 private:
     string name, username, password;
-    Permission *permissions[100] = {NULL};
+    Permission *permissions[100] = {nullptr};
 
 public:
     User(string _name, string _username, string _password) : name(_name), username(_username), password(_password) {}
-    static User *create(string, string, string);
+    static User *create(string, string, string, User *);
     void addPermission(Permission *);
     void print();
     void printUser(); // to soal nabod vali lazem bod
     bool checkAuth(string, string);
+    bool cPermission(Permission *);
 };
 
 void User::printUser() { cout << username << endl; }
@@ -65,37 +70,50 @@ bool User::checkAuth(string _user, string _pass)
     }
 }
 
+bool User::cPermission(Permission *entry)
+{
+    for (int i = 0; permissions[i] != nullptr; i++)
+    {
+        if (permissions[i] == entry)
+            return true;
+    }
+    return false;
+}
+
 void User::addPermission(Permission *permission)
 {
     int i = 0;
-    for (; permissions[i] != NULL; i++)
+    for (; permissions[i] != nullptr; i++)
     {
         if (permissions[i] == permission)
             return;
     }
     permissions[i] = permission;
 }
-User *userarray[100] = {NULL};
 
-/// agar dastresi add user dasht
-// baresi shavad
-User *User ::create(string _name, string _username, string _password)
+User *userarray[100] = {nullptr};
+
+User *User ::create(string _name, string _username, string _password, User *whoami)
 {
     User *newuser = new User(_name, _username, _password);
-    int i = 0;
-    for (; userarray[i]; i++)
+    if (whoami->cPermission(perar[4]))
     {
-        ;
+        int i = 0;
+        for (; userarray[i]; i++)
+        {
+            ;
+        }
+        userarray[i] = newuser;
+        return newuser;
     }
-    userarray[i] = newuser;
-    return newuser;
+    return NULL;
 }
 void User::print()
 {
     cout << "username is:" << username << endl
          << "password is:" << password;
     cout << "permissions are:";
-    for (int i = 0; permissions[i] != NULL; i++)
+    for (int i = 0; permissions[i] != nullptr; i++)
     {
         cout << permissions[i]->titleback() << endl;
     }
@@ -104,16 +122,20 @@ void User::print()
 class Auth
 {
 private:
-    inline static User *auth = NULL;
+    inline static User *auth = nullptr;
 
 public:
     static User *login(string username, string password);
-    static void logout() { auth = NULL; }
+    static void logout()
+    {
+        cout << "You are logged out" << endl;
+        auth = nullptr;
+    }
     static User *Whoami() { return auth; }
 };
 User *Auth::login(string username, string password)
 {
-    for (int i = 0; userarray[i] != NULL; i++)
+    for (int i = 0; userarray[i] != nullptr; i++)
     {
         if (userarray[i]->checkAuth(username, password))
         {
@@ -121,7 +143,7 @@ User *Auth::login(string username, string password)
             return userarray[i];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 class Tag
@@ -144,26 +166,22 @@ Tag *MyTags[100] = {nullptr};
 
 Tag *Tag::create(string TAG)
 {
-    int x = 0;
+    int i = 0;
     Tag *TEMP = new Tag(TAG);
-    while (MyTags[x] != nullptr)
+    for (; MyTags[i] != nullptr; i++)
     {
-        x++;
     }
-    MyTags[x] = TEMP;
+    MyTags[i] = TEMP;
     return TEMP;
 }
 
 void Tag::printAll()
 {
-    cout << "your tags are :" << endl;
-    for (size_t i = 0; i < 100; i++)
+    system("clear");
+    for (int i = 0; MyTags[i] != nullptr; i++)
     {
-        if (MyTags[i] != nullptr)
-        {
-            cout << "(" << i << "). ";
-            MyTags[i]->print();
-        }
+        cout << "🤡 " << i << " -> ";
+        MyTags[i]->print();
     }
 }
 
@@ -180,14 +198,18 @@ protected:
 public:
     void publish();
     void unpublish();
-    void addTag(Tag *); 
+    void addTag(Tag *);
     // MITAVANAD NABASHAD
+    bool ISpublish() { return isPublished; };
     string Info_type() { return type; }   // niaz bod baraye print all
     string q_print() { return question; } // niaz bod baraye print all
     ////////////////////////
     Question(string, DateTime, string, User);
+    virtual void addAnswer(string) = 0;
     virtual void print() = 0;
     virtual void printAll() = 0;
+    virtual Question *edit(string, DateTime, User) = 0;
+    virtual Question *edit(string, DateTime, User, string, string, string, string, char) = 0;
 };
 
 Question::Question(string _question, DateTime _createdAt, string _type, User _user) : question(_question), createdAt(_createdAt), type(_type), user(_user)
@@ -197,16 +219,27 @@ Question::Question(string _question, DateTime _createdAt, string _type, User _us
 
 void Question::addTag(Tag *_tag)
 {
-    int i = 0;
-    for (; tags[i] != nullptr; i++)
+    int h = 0;
+    while (true)
     {
-        if (MyTags[i]->showTag() == _tag->showTag())
+        if (tags[h] == nullptr)
+        {
+            tags[h] = _tag;
             break;
+        }
+
+        else if (tags[h] == _tag)
+        {
+            break;
+        }
+        else
+        {
+            h++;
+        }
     }
-    MyTags[i]->showTag() = _tag->showTag();
 }
 
-Question *QuestionS[100] = {NULL};
+Question *QuestionS[100] = {nullptr};
 
 void Question::unpublish() { isPublished = false; }
 void Question::publish() { isPublished = true; }
@@ -222,20 +255,52 @@ public:
     void addAnswer(string);
     Descriptive(User, DateTime, string);
     static Descriptive *create(string, DateTime, User);
-    /// TABEH EDIT
+    Question *edit(string question, DateTime createdAt, User user) override;
+    Question *edit(string question, DateTime createdAt, User user, string A, string B, string C, string D, char answer) override;
 };
 
-Descriptive::Descriptive(User usr, DateTime crAt, string Ques) : Question(Ques, crAt, "Descriptive", usr) {}
+Descriptive *Descriptive::create(string question, DateTime createdAt, User user)
+{
+    if (user.cPermission(perar[0]))
+    {
 
-Descriptive *create(string, DateTime, User);
+        Descriptive *temp = new Descriptive(user, createdAt, question);
+        int i = 0;
+        for (; QuestionS[i] != nullptr; i++)
+        {
+        }
+        QuestionS[i] = temp;
+        return temp;
+    }
+    return nullptr;
+}
+
+Question *Descriptive::edit(string question, DateTime createdAt, User user, string A, string B, string C, string D, char answer) { return NULL; }
+
+Question *Descriptive::edit(string str, DateTime dt, User usr)
+{
+    if (usr.cPermission(perar[2]))
+    {
+
+        this->question = str;
+        this->createdAt = dt;
+        this->user = usr;
+
+        return this;
+    }
+    return nullptr;
+}
+
+Descriptive::Descriptive(User usr, DateTime crAt, string Ques) : Question(Ques, crAt, "Descriptive", usr) {}
 
 void Descriptive::print()
 
 {
+    cout << "------------------------------------------" << endl;
     cout << "Question type: " << type << endl
          << "Question: " << question << endl
          << "answer: " << answer << endl
-         << " published by: ";
+         << "published by: ";
     user.printUser();
     cout << "Date of Release: " << createdAt.year << "/" << createdAt.month << "/" << createdAt.day << endl
          << "Release time: " << createdAt.hour << ":" << createdAt.minute << ":" << createdAt.second << endl;
@@ -246,21 +311,37 @@ void Descriptive::print()
     }
     else
     {
-        cout << "This question isn't in publishing mode." << endl;
+        cout << "This question isn't in publishing mode." << endl
+             << endl;
     }
 
-    // TAG SOAL HA BAYAD PRINT SHAVAD
+    cout << "Tags for this question :" << endl;
+    if (tags[0] == nullptr)
+    {
+        cout << "not tags for this question" << endl;
+    }
+    else
+    {
+
+        for (int i = 0; tags[i] != nullptr; i++)
+        {
+            tags[i]->print();
+        }
+    }
+    cout << "------------------------------------------" << endl;
 }
 
 void Descriptive::printAll()
 {
 
-    for (int j = 0; QuestionS[j] != NULL; j++)
+    for (int j = 0; QuestionS[j] != nullptr; j++)
     {
         if (QuestionS[j]->Info_type() == "Descriptive")
-        {
-            cout << "❇️" << j << " : " << QuestionS[j]->q_print() << "❓" << endl;
-        }
+
+            if (QuestionS[j]->ISpublish() != false)
+            {
+                cout << "❇️  " << j << " : " << QuestionS[j]->q_print() << "❓" << endl;
+            }
     }
 }
 
@@ -276,15 +357,54 @@ private:
     string B;
     string C;
     string D;
-    char answer; // ARAYE BESHE
+    char answer;
 
 public:
-    ///// TABEH STATIC CREATE
-    /// TABEH EDIT
     void print();
     void printAll();
+    static FourChoice *create(string, DateTime, User, string, string, string, string, char);
+    void addAnswer(string){};
+    Question *edit(string, DateTime, User);
+    Question *edit(string question, DateTime createdAt, User user, string A, string B, string C, string D, char answer) override;
     FourChoice(char, string, string, string, string, User, DateTime, string);
 };
+
+FourChoice *FourChoice::create(string question, DateTime createdAt, User user, string A, string B, string C, string D, char answer)
+{
+    if (user.cPermission(perar[1]))
+    {
+
+        FourChoice *temp = new FourChoice(answer, A, B, C, D, user, createdAt, question);
+        int i = 0;
+        for (; QuestionS[i] != nullptr; i++)
+        {
+        }
+        QuestionS[i] = temp;
+        return temp;
+    }
+    return NULL;
+}
+
+Question *FourChoice::edit(string, DateTime, User) { return NULL; }
+Question *FourChoice::edit(string question, DateTime createdAt, User user, string A, string B, string C, string D, char answer)
+{
+
+    if (user.cPermission(perar[3]))
+    {
+
+        this->question = question;
+        this->createdAt = createdAt;
+        this->user = user;
+        this->A = A;
+        this->B = B;
+        this->C = C;
+        this->D = D;
+        this->answer = answer;
+        return this;
+    }
+    return NULL;
+}
+
 FourChoice::FourChoice(char ans, string a, string b, string c, string d, User usr, DateTime crAt, string Ques) : Question(Ques, crAt, "FourChoice", usr)
 {
     A = a;
@@ -297,25 +417,29 @@ FourChoice::FourChoice(char ans, string a, string b, string c, string d, User us
 void FourChoice::printAll()
 {
 
-    for (int i = 0; QuestionS[i] != NULL; i++)
+    for (int i = 0; QuestionS[i] != nullptr; i++)
     {
         if (QuestionS[i]->Info_type() == "FourChoice")
         {
-            cout << "💠" << i << " : " << QuestionS[i]->q_print() << "❓" << endl;
+            if (QuestionS[i]->ISpublish() != false)
+            {
+                cout << "💠 " << i << " : " << QuestionS[i]->q_print() << "❓" << endl;
+            }
         }
     }
 }
 
 void FourChoice::print()
 {
+    cout << "------------------------------------------" << endl;
     cout << "Question type: " << type << endl
          << "Question: " << question << endl
-         << "A- " << A << endl
-         << "B- " << B << endl
+         << "A-" << A << endl
+         << "B-" << B << endl
          << "C-" << C << endl
          << "D-" << D << endl
          << "The correct option for this question is " << answer << endl
-         << " published by: ";
+         << "published by: ";
     user.printUser();
     cout << "Date of Release: " << createdAt.year << "/" << createdAt.month << "/" << createdAt.day << endl
          << "Release time: " << createdAt.hour << ":" << createdAt.minute << ":" << createdAt.second << endl;
@@ -326,33 +450,225 @@ void FourChoice::print()
     }
     else
     {
-        cout << "This question isn't in publishing mode." << endl;
+        cout << "This question isn't in publishing mode." << endl
+             << endl;
+        ;
     }
-    // TAG SOAL HA BAYAD PRINT SHAVAD
+
+    cout << "Tags for this question :" << endl;
+    if (tags[0] == nullptr)
+    {
+        cout << "not tags for this question" << endl;
+    }
+    else
+    {
+
+        for (int i = 0; tags[i] != nullptr; i++)
+        {
+            tags[i]->print();
+        }
+    }
+    cout << "------------------------------------------" << endl;
+}
+
+void p_users()
+{
+    system("clear");
+    for (int i = 0; userarray[i] != nullptr; i++)
+    {
+        cout << "👥 " << i << " -> ";
+        userarray[i]->printUser();
+    }
+}
+
+// void p_tags()
+// {
+//     for (int i = 0; MyTags[i] != nullptr; i++)
+//     {
+//         cout << "🤡 " << i << " -> ";
+//         MyTags[i]->print();
+//     }
+// }
+
+void p_FourChoice()
+{
+
+    User admin("nullptr", "nullptr", "nullptr");
+    DateTime TestDate = {2024, 6, 14, 18, 25, 00};
+    FourChoice testQ('0', "nullptr", "nullptr", "nullptr", "nullptr", admin, TestDate, "nullptr");
+    testQ.printAll();
+}
+
+/// soal daram
+void p_Descriptive()
+{
+    User admin("nullptr", "nullptr", "nullptr");
+    DateTime TestDate = {2024, 6, 14, 18, 25, 00};
+    Descriptive testQ(admin, TestDate, "00000");
+    testQ.printAll();
+}
+
+// ------------------------------------------------------------------------------------FRONT--------------------------------------------------------------------------------------
+void NoLogin();
+void CinQTU();
+void Login();
+void TAG_MENU();
+void Qu_Menu();
+void User_Menu();
+void _loginMenu();
+void Exit();
+void p_Qustions();
+void PublishQ(int);
+
+int main()
+{
+    Permission::create("add-descriptive-question");
+    Permission::create("add-four-choice-question");
+    Permission::create("edit-descriptive-question");
+    Permission::create("edit-four-choice-question");
+    Permission::create("add-user");
+    User *x = new User("admin", "admin", "123456");
+    userarray[0] = x;
+    userarray[0]->addPermission(perar[0]);
+    userarray[0]->addPermission(perar[1]);
+    userarray[0]->addPermission(perar[2]);
+    userarray[0]->addPermission(perar[3]);
+    userarray[0]->addPermission(perar[4]);
+    Descriptive::create("are you ready", {9, 9, 9, 9, 9, 9}, *userarray[0]);
+    Descriptive::create("HOW ARE YOU", {9, 9, 9, 9, 9, 9}, *userarray[0]);
+    FourChoice::create("Is dr a good person", {9, 9, 9, 9, 9, 9}, *userarray[0], "yes", "yes", "yes", "yes", 'a');
+    QuestionS[0]->publish();
+    QuestionS[1]->publish();
+    QuestionS[2]->publish();
+    Tag::create("programmer");
+    Tag::create("Computer Engineering");
+    QuestionS[0]->addTag(MyTags[0]); // TEST
+    NoLogin();
+    return false;
 }
 
 void NoLogin()
 {
+
+    system("clear");
     cout << "⚪️(L) Login  " << endl
          << "⚪️(V) View Question" << endl;
+    char x;
+    cin >> x;
+    switch (x)
+    {
+    case 'l':
+    case 'L':
+        Login();
+        break;
+    case 'V':
+    case 'v':
+        p_Qustions();
+        break;
+    default:
+        system("clear");
+        cout << "❌ Not Found " << x << endl;
+        break;
+    }
 }
 
-void Login(string u_ser)
+void CinQTU()
 {
-    system("clear");
-    cout << "--------------------" << endl;
-    cout << "Hello " << u_ser << " 🤚" << endl;
-    cout << "--------------------" << endl;
-    cout << "⚪️(Q) Question Menu " << endl;
-    cout << "⚪️(T) Tag Menu" << endl;
-    cout << "⚪️(U) User Menu" << endl;
+    char x;
+    cin >> x;
+    switch (x)
+    {
+    case 'Q':
+    case 'q':
+        Qu_Menu();
+
+        break;
+    case 'T':
+    case 't':
+        TAG_MENU();
+
+        break;
+    case 'U':
+    case 'u':
+        User_Menu();
+
+        break;
+    case 'L':
+    case 'l':
+        Auth::logout();
+        NoLogin();
+        break;
+
+    default:
+        cout << " Not found " << x << "❌" << endl;
+        break;
+    }
+}
+
+void Login()
+{
+
+    string Name, UserName, PASSword;
+    cin.ignore();
+    cout << "write yuor username :";
+    getline(cin, UserName);
+    cout << "write yuor password :";
+    getline(cin, PASSword);
+    if (Auth::login(UserName, PASSword))
+    {
+        system("clear");
+        cout << "--------------------" << endl;
+        cout << "Hello " << UserName << " 🤚" << endl;
+        cout << "--------------------" << endl;
+        cout << "⚪️(Q) Question Menu " << endl;
+        cout << "⚪️(T) Tag Menu" << endl;
+        cout << "⚪️(U) User Menu" << endl;
+        cout << "⚪️(L) Log out" << endl;
+        CinQTU();
+    }
+    else
+    {
+        system("clear");
+        cout << " User Not found ❌" << endl;
+    }
 }
 
 void TAG_MENU()
 {
     system("clear");
     cout << "⚪️(L) List of Tags with ID  " << endl
-         << "⚪️(V) Create new Tag " << endl;
+         << "⚪️(C) Create new Tag " << endl;
+    cout << "📍(0) exit " << endl;
+
+    string title;
+    char h;
+    cin >> h;
+    switch (h)
+    {
+    case '0':
+        system("clear");
+        _loginMenu();
+        break;
+    case 'C':
+    case 'c':
+        cin.ignore();
+        cout << "Write your tag :" << endl;
+        getline(cin, title);
+        Tag::create(title);
+        system("clear");
+        TAG_MENU();
+        break;
+    case 'L':
+    case 'l':
+        Tag::printAll();
+        Exit();
+        break;
+    default:
+        system("clear");
+        cout << "not found " << h << "❌" << endl;
+        _loginMenu();
+        break;
+    }
 }
 
 void Qu_Menu()
@@ -366,6 +682,184 @@ void Qu_Menu()
     cout << "🔴(c) create FourChoice Question" << endl;
     cout << "🔴(e) edit FourChoiceQuestion" << endl;
     cout << "🔴(p) print FourChoice Question" << endl;
+    cout << "📍(0) exit " << endl;
+
+    char x, correct;
+    int i, j, h;
+    cin >> x;
+    string _question, G1, G2, G3, G4;
+    DateTime s1;
+    string Answer;
+    switch (x)
+    {
+    case 'L':
+        system("clear");
+        p_Descriptive();
+        Exit();
+        break;
+    case 'C':
+        cout << "write your question : ( Without ?)" << endl;
+        cin.ignore();
+        getline(cin, _question);
+        cout << "write your answer :" << endl;
+        cin >> Answer;
+        cout << "write your date :" << " year-month-day \n exp 2024 01 02" << endl;
+        cin >> s1.year >> s1.month >> s1.day;
+        cout << "write your date :" << " hour-minute-Second \n exp 15 27 09" << endl;
+        cin >> s1.hour >> s1.minute >> s1.second;
+        Descriptive::create(_question, s1, *Auth::Whoami());
+        i = 0;
+        for (; QuestionS[i] != nullptr; i++)
+        {
+        }
+        PublishQ(--i);
+        QuestionS[i]->addAnswer(Answer);
+
+        cout << "How many tags do you want to add?" << endl;
+        cin >> j;
+        for (int z = 0; z < j; z++)
+        {
+            cout << "write index tag :" << endl;
+            cin >> h;
+            QuestionS[i - 1]->addTag(MyTags[h]);
+        }
+
+        system("clear");
+
+        Qu_Menu();
+        break;
+    case 'E':
+        system("clear");
+        p_Descriptive();
+        cout << "which question?" << endl;
+        cin >> i;
+        cout << "write your question : ( Without ?)" << endl;
+        cin.ignore();
+        getline(cin, _question);
+        cout << "write your date :" << " year-month-day \n exp 2024 01 02" << endl;
+        cin >> s1.year >> s1.month >> s1.day;
+        cout << "write your date :" << " hour-minute-Second \n exp 15 27 09" << endl;
+        cin >> s1.hour >> s1.minute >> s1.second;
+        QuestionS[i]->edit(_question, s1, *Auth::Whoami());
+        system("clear");
+        Qu_Menu();
+        break;
+    case 'P':
+        system("clear");
+        p_Descriptive();
+        cout << "Enter the question number : " << endl;
+        cin >> i;
+        system("clear");
+        QuestionS[i]->print();
+        Exit();
+        break;
+    case 'l':
+        system("clear");
+        p_FourChoice();
+        Exit();
+        break;
+    case 'c':
+
+        cout << "write your question : (Without ?)" << endl;
+        cin.ignore();
+        getline(cin, _question);
+        cout << "Write the text of option A :" << endl;
+        cin.ignore();
+        getline(cin, G1);
+        cout << "Write the text of option B :" << endl;
+        cin.ignore();
+        getline(cin, G2);
+        cout << "Write the text of option C :" << endl;
+        cin.ignore();
+        getline(cin, G3);
+        cout << "Write the text of option D :" << endl;
+        cin.ignore();
+        getline(cin, G4);
+        cout << "Which option is correct? (A,B,C,D)" << endl;
+        cin >> correct;
+        cout << "write your date :" << " year-month-day \n exp 2024 01 02" << endl;
+        cin >> s1.year >> s1.month >> s1.day;
+        cout << "write your date :" << " hour-minute-Second \n exp 15 27 09" << endl;
+        cin >> s1.hour >> s1.minute >> s1.second;
+        FourChoice::create(_question, s1, *Auth::Whoami(), G1, G2, G3, G4, correct);
+        i = 0;
+        for (; QuestionS[i] != nullptr; i++)
+        {
+        }
+        PublishQ(i - 1);
+        system("clear");
+        Tag::printAll();
+        cout << "How many tags do you want to add?" << endl;
+        cin >> j;
+        for (int z = 0; z < j; z++)
+        {
+            cout << "write index tag :" << endl;
+            cin >> h;
+            QuestionS[i - 1]->addTag(MyTags[h]);
+        }
+        system("clear");
+        Qu_Menu();
+        break;
+    case 'e':
+        system("clear");
+        p_FourChoice();
+        cout << "which question?" << endl;
+        cin >> i;
+        cout << "write your question : (Without ?)" << endl;
+        cin.ignore();
+        getline(cin, _question);
+        cout << "Write the text of option A :" << endl;
+        cin.ignore();
+        getline(cin, G1);
+        cout << "Write the text of option B :" << endl;
+        cin.ignore();
+        getline(cin, G2);
+        cout << "Write the text of option C :" << endl;
+        cin.ignore();
+        getline(cin, G3);
+        cout << "Write the text of option D :" << endl;
+        cin.ignore();
+        getline(cin, G4);
+        cout << "Which option is correct? (A,B,C,D)" << endl;
+        cin >> correct;
+        cout << "write your date :" << " year-month-day \n exp 2024 01 02" << endl;
+        cin >> s1.year >> s1.month >> s1.day;
+        cout << "write your date :" << " hour-minute-Second \n exp 15 27 09" << endl;
+        cin >> s1.hour >> s1.minute >> s1.second;
+        QuestionS[i]->edit(_question, s1, *Auth::Whoami(), G1, G2, G3, G4, correct);
+        PublishQ(i - 1);
+        system("clear");
+        Tag::printAll();
+        cout << "How many tags do you want to add?" << endl;
+        cin >> j;
+        for (int z = 0; z < j; z++)
+        {
+            cout << "write index tag :" << endl;
+            cin >> h;
+            QuestionS[i - 1]->addTag(MyTags[h]);
+        }
+        system("clear");
+        Qu_Menu();
+        break;
+    case 'p':
+        system("clear");
+        p_FourChoice();
+        cout << "Enter the question number : " << endl;
+        cin >> j;
+        system("clear");
+        QuestionS[j]->print();
+        Exit();
+        break;
+    case '0':
+        system("clear");
+        _loginMenu();
+        break;
+    default:
+        system("clear");
+        cout << "not found " << x << "❌" << endl;
+        _loginMenu();
+        break;
+    }
 }
 void User_Menu()
 {
@@ -373,150 +867,121 @@ void User_Menu()
     cout << "⚪️(L) List of Users with ID" << endl;
     cout << "⚪️(C) Create new User" << endl;
     cout << "⚪️(A) Add Permission to a User" << endl;
+    cout << "📍(0) exit " << endl;
+    string name, username, password;
+    char x;
+    int o, u;
+    cin >> x;
+    switch (x)
+    {
+    case 'L':
+    case 'l':
+        p_users();
+        Exit();
+        break;
+    case 'C':
+    case 'c':
+        cin.ignore();
+        cout << "enter name" << endl;
+        getline(cin, name);
+        cout << "enter username" << endl;
+        getline(cin, username);
+        cout << "enter password" << endl;
+        getline(cin, password);
+        User::create(name, username, password, Auth::Whoami());
+        system("clear");
+        User_Menu();
+        break;
+    case 'A':
+    case 'a':
+        system("clear");
+        for (int i = 0; userarray[i] != nullptr; i++)
+        {
+            cout << i << ":";
+            userarray[i]->printUser();
+        }
+        cout << "enter inedx user : " << endl;
+        cin >> o;
+        system("clear");
+        for (int i = 0; perar[i] != nullptr; i++)
+        {
+            cout << i << ":" << perar[i]->titleback() << endl;
+        }
+        cout << "enter inedx permisson : " << endl;
+        cin >> u;
+        userarray[o]->addPermission(perar[o]);
+        system("clear");
+        User_Menu();
+        break;
+    case '0':
+        system("clear");
+        _loginMenu();
+        break;
+    default:
+        system("clear");
+        cout << "not found " << x << "❌" << endl;
+        _loginMenu();
+        break;
+    }
 }
 
-void CinNUP()
+void _loginMenu()
 {
-    string Name, UserName, PASSword;
-    cin.ignore();
-    cout << "write yuor name :";
-    getline(cin, Name);
-    cout << "write yuor user name :";
-    getline(cin, UserName);
-    cout << "write yuor password :";
-    getline(cin, PASSword);
-    if (Auth::login(UserName, PASSword))
+    cout << "-------------------------" << endl;
+    cout << "⚪️(Q) Question Menu " << endl;
+    cout << "⚪️(T) Tag Menu" << endl;
+    cout << "⚪️(U) User Menu" << endl;
+    cout << "⚪️(L) Log out" << endl;
+    cout << "-------------------------" << endl;
+    CinQTU();
+}
+
+void Exit()
+{
+
+    char x;
+    cout << endl
+         << "📍(0) Exit " << endl;
+    cin >> x;
+    if (x == '0')
     {
-        Login(UserName);
+        system("clear");
+        _loginMenu();
     }
     else
     {
         system("clear");
-        cout << " User Not found ❌" << endl;
+        cout << "not found " << x << " ❌" << endl;
+        _loginMenu();
     }
 }
 
-void p_FourChoice()
+void p_Qustions()
 {
-    User admin("null", "null", "null");
-    DateTime TestDate = {2024, 6, 14, 18, 25, 00};
-
-    FourChoice testQ('0', "null", "null", "null", "null", admin, TestDate, "null");
-    testQ.printAll();
-}
-
-void p_Descriptive()
-{
-    User admin("null", "null", "null");
-    DateTime TestDate = {2024, 6, 14, 18, 25, 00};
-    Descriptive testQ(admin, TestDate, "null");
-    testQ.printAll();
-}
-
-void p_Quetions()
-{
+    system("clear");
     p_Descriptive();
     p_FourChoice();
 }
 
-
-void Qmenu()
+void PublishQ(int f)
 {
-    char x;
-    cin>>x;
-    switch (x)
+
+    char ch;
+    cout << "Will it be published? (Y,N)" << endl;
+    cin >> ch;
+    switch (ch)
     {
-    case 'L':
-
+    case 'y':
+    case 'Y':
+        QuestionS[f]->publish();
         break;
-    case 'C':
-
+    case 'N':
+    case 'n':
+        QuestionS[f]->unpublish();
         break;
-    case 'E':
-
-        break;
-    case 'P':
-        // p_Descriptive();
-        break;
-    case 'l':
-
-        break;
-    case 'c':
-
-        break;
-    case 'e':
-
-        break;
-    case 'p':
-        // p_FourChoice();
-        break;
-    default:
-        break;
-    }
-}
-
-void Tmenu()
-{}
-    
-
-void Umenu(){
-  
-}
-
-
-
-    void CinQTU()
-    {
-        char x;
-        cin >> x;
-        switch (x)
-        {
-        case 'Q':
-        case 'q':
-            Qu_Menu();
-            Qmenu();
-            break;
-        case 'T':
-        case 't':
-            TAG_MENU();
-            Tmenu();
-            break;
-        case 'U':
-        case 'u':
-            User_Menu();
-            Umenu();
-        default:
-            break;
-        }
-    }
-
-int main()
-{
-    Permission::create("add-descriptive-question");
-    Permission::create("add-four-choice-question");
-    Permission::create("edit-descriptive-question");
-    Permission::create("edit-four-choice-question");
-    Permission::create("add-user");
-    User::create("1", "1", "1");
-
-    char x;
-    NoLogin();
-    cin >> x;
-    switch (x)
-    {
-    case 'l':
-    case 'L':
-        CinNUP();
-        CinQTU();
-        break;
-    case 'V':
-    case 'v':
 
     default:
-        system("clear");
-        cout << "❌ Not Found " << x << endl;
+        Qu_Menu();
         break;
     }
-
-    return 0;
 }
